@@ -1,40 +1,51 @@
 import React, { useEffect, useRef, useState } from "react";
 import { MenuAlt3Icon } from "@heroicons/react/outline";
 import { UserCircleIcon } from "@heroicons/react/solid";
+import { useMediaQuery } from "react-responsive";
 
 import style from "./headerStyle";
 
 function Header() {
-  const ref = useRef()
-  const [status, setStatus] = useState(false);
-  
+  const isTabletOrMobile = useMediaQuery({ query: "(min-width: 1224px)" });
+  const menuRef = useRef();
+  const menuIconRef = useRef();
+  const ref = useRef();
+
+  useEffect(() => {
+    if (isTabletOrMobile) {
+      menuRef.current.classList.remove("hidden");
+      ref.current.classList.remove("hidden");
+      menuIconRef.current.classList.add("hidden");
+
+    }
+  },[]);
+
+  const menuToggleHandler = () => {
+    menuRef.current.classList.toggle("hidden");
+    ref.current.classList.toggle("hidden");
+  };
 
   return (
     <header className={style.header}>
-      <img src="/logo.png" alt="logo" className={`${style.logoImage} `} />
-
-      <nav
-        ref={ref}
-        className={`${style.navLinks} ${status ? "" : "hidden lg:flex"} `}
-      >
+      <img
+        src={`${isTabletOrMobile ? "/logo.png" : "/logo_light.png"}`}
+        alt="logo"
+        className={`${style.logoImage} `}
+      />
+      <nav ref={menuRef} className={style.navLinks}>
         <p className={style.navLinkType1}>Services</p>
         <p className={style.navLinkType2}>Doctors</p>
         <p className={style.navLinkType1}>Specialists</p>
         <p className={style.navLinkType2}>Pharmacy</p>
         <p className={style.navLinkType1}>About</p>
       </nav>
-      <UserCircleIcon
-        className={`${style.userIcon} ${
-          status ? " -translate-x-0" : " -translate-x-10"
-        }`}
-      />
+      <div ref={ref} className="hidden">
+        <UserCircleIcon className={style.userIcon} />
+      </div>
 
-      <MenuAlt3Icon
-        onClick={() => setStatus((prev) => !prev)}
-        className={`${style.menuIcon} ${
-          status ? "text-white" : "text-primary"
-        }`}
-      />
+      <div ref={menuIconRef} className="block">
+        <MenuAlt3Icon className={style.menuIcon} onClick={menuToggleHandler} />
+      </div>
     </header>
   );
 }
